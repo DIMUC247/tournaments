@@ -26,31 +26,31 @@ async def get_teams(private: Optional[bool], db: AsyncSession) -> List[Team]:
         return await db.scalars(Team)
     else:
         return await db.scalars(select(Team).filter_by(private=private))
-    
+
 
 async def remove_team(team_id: str, user_id: str, db: AsyncSession) -> bool:
-    team= await db.scalar(select(UserTeamAssoc).filter_by(Team.id==team_id, User.id==user_id,UserTeamAssoc.role==Role.teamlead))
-    if not team:
+    user_team_assoc = await db.scalar(select(UserTeamAssoc).filter_by(team_id=team_id, user_id=user_id, role=Role.teamlead))
+    if not user_team_assoc:
         return False
 
-    db.delete(team)
+    db.delete(user_team_assoc.team)
     await db.commit()
     return True
 
 
 async def add_user_by_team_lead(team_id: str, user_id: str, member_user_id: str, db: AsyncSession) -> bool:
-    team: Optional[Team] = await db.scalar(select(UserTeamAssoc).filter_by(Team.id==team_id, User.id==user_id,UserTeamAssoc.role==Role.teamlead))
+    user_team_assoc = await db.scalar(select(UserTeamAssoc).filter_by(team_id=team_id, user_id=user_id, role=Role.teamlead))
     user: Optional[User] = await get_user(user_id=member_user_id, db=db)
-    if not team or not user:
+    if not user_team_assoc or not user:
         return False
 
-    team.users.append(user)
+    user_team_assoc.team.users.append(user)
     await db.commit()
     return True
 
 
-async def add_user_to_team(team_id:str, user_id: str, db: AsyncSession) -> bool:
-    team = await db.scalar(select(Team).filter_by(id=team_id,private=False))
+async def add_user_to_team(team_id: str, user_id: str, db: AsyncSession) -> bool:
+    team = await db.scalar(select(Team).filter_by(id=team_id, private=False))
     if not team:
         return False
 

@@ -9,3 +9,4 @@ class TeamModel(BaseModel):
 class TeamModelResponse(TeamModel):
     id: str
 
+
