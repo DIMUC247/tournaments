@@ -25,7 +25,7 @@ class UserTeamAssoc(Base):
 
 
 class Result(Base):
-    __tablename__ = "team_tournament_assoc"
+    __tablename__ = "results"
 
     id = Column(String(100), primary_key=True)
     team_id = Column(String(100), ForeignKey("teams.id",ondelete="cascade",onupdate="cascade"), primary_key=True)

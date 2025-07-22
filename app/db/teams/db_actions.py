@@ -11,7 +11,7 @@ from app.db.users.db_actions import get_user
 
 
 async def create_team(user_id: str, team_model:TeamModel,db: AsyncSession)-> None:
-    team = Team(team_model.model_dump())
+    team = Team(**team_model.model_dump())
     user_team_assoc = UserTeamAssoc(user_id=user_id, team=team, role=Role.teamlead)
     db.add(user_team_assoc)
     await db.commit()
